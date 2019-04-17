@@ -1,0 +1,29 @@
+.field {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.square {
+  display: flex;
+  width: 5rem;
+  height: 5rem;
+  border: .1rem solid #d3d3d3;
+  margin: .1rem;
+}
+
+.number {
+  margin: auto;
+  font-size: 2rem;
+}
+
+.active {
+  background-color: #ffa500;
+}
+
+@media (max-width: 45rem) {
+  .square {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+  }
+}

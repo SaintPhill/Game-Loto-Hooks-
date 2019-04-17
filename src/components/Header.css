@@ -1,0 +1,17 @@
+.header_wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.img {
+  width: 1.5rem;
+}
+
+.img_btn {
+  margin-top: 0.5rem;
+  margin-right: 2rem;
+}
+
+.flex_off {
+  display: block;
+}
