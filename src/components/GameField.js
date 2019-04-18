@@ -1,5 +1,6 @@
 import React from 'react'
 import './GameField.css'
+import PropTypes from 'prop-types'
 
 function GameField ({ field, onClick }) {
   return (
@@ -18,3 +19,9 @@ function GameField ({ field, onClick }) {
 }
 
 export default GameField
+
+GameField.propTypes = {
+  field: PropTypes.array.isRequired,
+  onClick: PropTypes.func.isRequired
+}
+

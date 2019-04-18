@@ -6,6 +6,7 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import { add_first_table_number, del_first_table_number } from './actions/firstTable'
 import { add_second_table_number, del_second_table_number } from './actions/secondTable'
+import { cleanTables } from './actions/cleanTables'
 
 function App () {
   const { state: store, dispatch } = React.useContext(Store)
@@ -13,6 +14,7 @@ function App () {
   const [secondTable, setSecondTable] = useState([])
   const [showResult, setResult] = useState(false)
   const [isWinner, setWinner] = useState(false)
+  const [isFetching, setFetching] = useState(false)
 
   useEffect(() => {
     if (firstTable.length === 0) {
@@ -78,12 +80,12 @@ function App () {
   }
 
   function getResults () {
-    if((store.firstTableResults.length === 8 && store.secondTableResults.length === 1)) {
+    if ((store.firstTableResults.length === 8 && store.secondTableResults.length === 1)) {
       let winCombitationFirstField = getWinNumbers()
       let winCombitationSecondField = Math.round(Math.random())
       let first_field = store.firstTableResults.filter(num => winCombitationFirstField.includes(num.id))
       let second_field = winCombitationSecondField === store.secondTableResults[0]
-      if (first_field.length === 8 || first_field.length === 7 && second_field) {
+      if (first_field.length === 8 || (first_field.length === 7 && second_field)) {
         setWinner(true)
       } else {
         setWinner(false)
@@ -95,7 +97,8 @@ function App () {
     }
   }
 
-  function sendResults(state, isWinnder, times) {
+  function sendResults (state, isWinnder, times) {
+    setFetching(true)
     return fetch('https://finch-test', {
       method: 'post',
       headers: {
@@ -107,12 +110,13 @@ function App () {
         secondField: state.secondTableResults,
         isTicketWon: isWinner
       })
-    }).then(res=>res.json())
+    }).then(res => res.json())
       .then(res => console.log(res))
       .catch(() => {
-        if(times !== 0) {
-          setTimeout(() => sendResults(state, isWinnder, times-1), 2000)
+        if (times !== 0) {
+          setTimeout(() => sendResults(state, isWinnder, times - 1), 2000)
         } else {
+          setFetching(false)
           alert('Не удалось отправить данные')
         }
       })
@@ -136,10 +140,17 @@ function App () {
     }
   }
 
+  function tryAgain () {
+    setSecondTable([])
+    setFirstTable([])
+    dispatch(cleanTables())
+    setResult(false)
+  }
+
   if (!showResult) {
     return (
       <div className={'game_wrapper'}>
-        <Header showWind={showResult} randomize={randomize}/>
+        <Header randomize={randomize}/>
         <main className={'main-content'}>
           <section>
             <p>
@@ -154,13 +165,18 @@ function App () {
             <GameField field={secondTable} onClick={toggleSecondTable}/>
           </section>
         </main>
-        <Footer showResults={getResults}/>
+        <Footer getResults={getResults}/>
       </div>
     )
   } else {
     return (
       <div className={'game_wrapper'}>
-        <Header isWinner={isWinner} showResult={showResult} randomize={randomize}/>
+        <Header
+          isFetching={isFetching}
+          tryAgain={tryAgain}
+          isWinner={isWinner}
+          showResult={showResult}
+          randomize={randomize}/>
       </div>
     )
   }

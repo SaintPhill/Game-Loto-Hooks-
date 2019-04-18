@@ -30,6 +30,8 @@ function reducer (state, action) {
         ...state,
         secondTableResults: state.secondTableResults.filter(el => el.id !== action.payload.id)
       }
+    case ACTION.CLEAN_TABLES:
+      return initialState
     default:
       return state
   }
